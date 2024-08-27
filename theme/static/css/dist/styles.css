@@ -2906,6 +2906,14 @@ select {
   cur: space;
 }
 
+.\[cursor\:length\] {
+  cursor: length;
+}
+
+.\[cursor\:start\] {
+  cursor: start;
+}
+
 .\[end\:next\] {
   end: next;
 }

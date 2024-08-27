@@ -130,4 +130,4 @@ Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à
 
 Vous recherchez des solutions d'automatisation plus avancées pour votre organisation sportive ? Nous pouvons vous aider à personnaliser et à étendre les fonctionnalités de cette application selon vos besoins spécifiques.
 
-Pour des solutions d'automatisation sur mesure, contactez-nous à hello@keerok.tech ou visitez notre site [keerok.tech](). Notre équipe est prête à transformer votre gestion d'équipe en un processus fluide et efficace.
+Pour des solutions d'automatisation sur mesure, contactez-nous à hello@keerok.tech ou visitez notre site [keerok.tech](https://keerok.tech). Notre équipe est prête à transformer votre gestion d'équipe en un processus fluide et efficace.

@@ -1,0 +1,25 @@
+<ul role="list" class="divide-y divide-white/5">
+    {% for player in players %}
+        {% if player.id|stringformat:"d" not in selected_players %}
+            <li class="relative flex items-center space-x-4 py-4">
+                <div class="min-w-0 flex-auto">
+                    <h2 class="min-w-0 text-sm font-semibold leading-6 text-white">
+                        {{ player.name }}
+                    </h2>
+                </div>
+                <div class="flex flex-none items-center gap-x-4">
+                    <button type="button"
+                            class="rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-400"
+                            hx-post="{% url 'planner:add-player' %}"
+                            hx-vals='{"player_id": "{{ player.id }}", "action": "add"{% if team %}, "team_id": "{{ team.id }}"{% endif %}}'
+                            hx-target="#player-lists-container"
+                            hx-swap="innerHTML">
+                        Ajouter joueur
+                    </button>
+                </div>
+            </li>
+        {% endif %}
+    {% empty %}
+        <li class="py-4 text-sm text-gray-500">No players found.</li>
+    {% endfor %}
+</ul>

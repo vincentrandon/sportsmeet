@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %} Profil de {{ user.name }} {% endblock %}
+{% block content %}
+<main class="py-10">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="space-y-10 divide-y divide-gray-900/10">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+                <div class="px-4 sm:px-0">
+                    <h2 class="text-base font-semibold leading-7 text-white">Profil</h2>
+                    <p class="mt-1 text-sm leading-6 text-gray-400">Mettez à jour vos informations personnelles.</p>
+                </div>
+
+                <form class="bg-white/5 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2" hx-swap="outerHTML">
+                    {% csrf_token %}
+                    <div class="px-4 py-6 sm:p-8">
+                        <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                            <div class="sm:col-span-3">
+                                <label for="name" class="block text-sm font-medium leading-6 text-white">Nom</label>
+                                <div class="mt-2">
+                                    <input type="text" name="name" id="name" autocomplete="given-name" value="{{ user.name }}" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-3">
+                                <label for="licence_number" class="block text-sm font-medium leading-6 text-white">Numéro de licence</label>
+                                <div class="mt-2">
+                                    <input type="text" name="licence_number" id="licence_number" value="{{ user.licence_number }}" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-4">
+                                <label for="email" class="block text-sm font-medium leading-6 text-white">Adresse e-mail</label>
+                                <div class="mt-2">
+                                    <input id="email" name="email" type="email" autocomplete="email" value="{{ user.email }}" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                        <button type="submit" class="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-8 gap-y-8 pt-10 md:grid-cols-3">
+                <div class="px-4 sm:px-0">
+                    <h2 class="text-base font-semibold leading-7 text-white">Changer le mot de passe</h2>
+                    <p class="mt-1 text-sm leading-6 text-gray-400">Mettez à jour votre mot de passe.</p>
+                </div>
+
+                <form class="bg-white/5 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2" hx-put="{% url 'accounts:password_change' %}" hx-swap="outerHTML">
+                    {% csrf_token %}
+                    <div class="px-4 py-6 sm:p-8">
+                        <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                            <div class="col-span-full">
+                                <label for="current-password" class="block text-sm font-medium leading-6 text-white">Mot de passe actuel</label>
+                                <div class="mt-2">
+                                    <input id="current-password" name="current_password" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+
+                            <div class="col-span-full">
+                                <label for="new-password" class="block text-sm font-medium leading-6 text-white">Nouveau mot de passe</label>
+                                <div class="mt-2">
+                                    <input id="new-password" name="new_password" type="password" autocomplete="new-password" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+
+                            <div class="col-span-full">
+                                <label for="confirm-password" class="block text-sm font-medium leading-6 text-white">Confirmer le mot de passe</label>
+                                <div class="mt-2">
+                                    <input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                        <button type="submit" class="rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500">Changer le mot de passe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

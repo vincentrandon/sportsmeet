@@ -1,0 +1,45 @@
+{% load tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-gray-900">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Equipes{% endblock %} - SportsMeet</title>
+    {% tailwind_css %}
+    <script defer="" src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="{% static 'js/toast.js' %}"></script>
+
+</head>
+<body class="h-full">
+<div class="flex">
+    {% include 'menu.html' %}
+    <div class="flex-1 xl:pl-72">
+        <!-- Sticky search header -->
+        <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-6 border-b border-white/5 bg-gray-900 px-4 shadow-sm sm:px-6 lg:px-8">
+            <button type="button" class="-m-2.5 p-2.5 text-white xl:hidden" @click="open = true">
+                <span class="sr-only">Open sidebar</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                          d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
+                          clip-rule="evenodd"/>
+                </svg>
+            </button>
+
+            <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+                {% include 'search-form.html' %}
+            </div>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+
+
+    </div>
+</div>
+
+{% include 'toast.html' %}
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

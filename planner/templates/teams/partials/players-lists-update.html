@@ -1,0 +1,10 @@
+{% if toast_message and toast_type %}
+    <div data-toast-message="{{ toast_message }}" data-toast-type="{{ toast_type }}" class="hidden"></div>
+{% endif %}
+
+<div id="selected-players-container">
+    {% include "teams/partials/selected-players-list.html" with selected_players=selected_players %}
+</div>
+<div id="players-list">
+    {% include "teams/partials/players-list.html" with players=players selected_players=selected_player_ids %}
+</div>

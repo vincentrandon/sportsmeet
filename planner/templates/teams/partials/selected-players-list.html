@@ -1,0 +1,73 @@
+{% load static %}
+
+{% if selected_players %}
+    <ul role="list" class="divide-y divide-white/5">
+        {% for player in selected_players %}
+            <li class="relative flex items-center space-x-4 py-4" data-player-id="{{ player.id }}">
+                <div class="min-w-0 flex-auto">
+                    <h2 class="min-w-0 text-sm font-semibold leading-6 text-white">
+                        {{ player.name }}
+                        {% if team and team.captain == player %}
+                            <span class="captain-badge ml-2 inline-flex items-center rounded-md bg-yellow-400/10 px-2 py-1 text-xs font-medium text-yellow-500 ring-1 ring-inset ring-yellow-400/20">Capitaine</span>
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="flex flex-none items-center gap-x-4">
+                    {% if team %}
+                        {% if team.captain == player %}
+                            <button type="button"
+                                    class="captain-action-btn rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
+                                    hx-post="{% url 'planner:nominate-captain' %}"
+                                    hx-vals='{"player_id": "{{ player.id }}", "team_id": "{{ team.id }}", "action": "remove"}'
+                                    hx-target="#player-lists-container"
+                                    hx-swap="innerHTML"
+                                    hx-ext="json-enc">
+                            Retirer le capitanat
+                            </button>
+                        {% else %}
+                            <button type="button"
+                                    class="captain-action-btn rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-400"
+                                    hx-post="{% url 'planner:nominate-captain' %}"
+                                    hx-vals='{"player_id": "{{ player.id }}", "team_id": "{{ team.id }}", "action": "nominate"}'
+                                    hx-target="#player-lists-container"
+                                    hx-swap="innerHTML"
+                                    hx-ext="json-enc">
+                                Nommer capitaine
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                    <button type="button"
+                            class="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400"
+                            hx-post="{% url 'planner:add-player' %}"
+                            hx-vals='{"player_id": "{{ player.id }}", "action": "remove"{% if team %}, "team_id": "{{ team.id }}"{% endif %}}'
+                            hx-target="#player-lists-container"
+                            hx-swap="innerHTML">
+                        Supprimer
+                    </button>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-sm text-gray-500">No players selected yet.</p>
+{% endif %}
+
+<script>
+    document.body.addEventListener('htmx:afterSwap', function (event) {
+        if (event.detail.xhr.response) {
+            try {
+                const response = JSON.parse(event.detail.xhr.response);
+                if (response.toast) {
+                    window.dispatchEvent(new CustomEvent('show-toast', {
+                        detail: {
+                            message: response.toast.message,
+                            type: response.toast.type || 'info'
+                        }
+                    }));
+                }
+            } catch (e) {
+                console.error('Error parsing JSON response', e);
+            }
+        }
+    });
+</script>

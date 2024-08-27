@@ -1,0 +1,40 @@
+{% if toast_message and toast_type %}
+    <div data-toast-message="{{ toast_message }}" data-toast-type="{{ toast_type }}" class="hidden"></div>
+{% endif %}
+
+<div id="player-lists-container">
+    <div class="border-b border-white/10 pb-12">
+        <h2 class="text-base font-semibold leading-7 text-white">Joueurs choisis</h2>
+        <div id="selected-players-container">
+            {% include "teams/partials/selected-players-list.html" with selected_players=selected_players team=team %}
+        </div>
+    </div>
+
+    <div class="border-b border-white/10 pb-12">
+        <h2 class="text-base font-semibold leading-7 text-white">Joueurs du club</h2>
+        <p class="mt-1 text-sm leading-6 text-gray-400">Sélectionnez les joueurs à intégrer dans l'équipe</p>
+
+        <div class="mt-2">
+            <div class="w-full">
+                <label for="search" class="sr-only">Rechercher</label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <input id="search" name="search"
+                           class="block w-full rounded-md border-0 bg-gray-700 py-1.5 pl-10 pr-3 text-gray-300 placeholder:text-gray-400 focus:bg-white focus:text-gray-900 focus:ring-0 sm:text-sm sm:leading-6"
+                           placeholder="Rechercher" type="search"
+                           hx-get="{% url 'planner:search-players' %}{% if team %}?team_id={{ team.id }}{% endif %}"
+                           hx-target="#players-list"
+                           hx-trigger="input changed delay:500ms, search">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-2" id="players-list">
+            {% include "teams/partials/players-list.html" with players=players selected_players=selected_players team=team %}
+        </div>
+    </div>
+</div>

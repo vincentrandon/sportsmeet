@@ -1,0 +1,45 @@
+{% for match in page_obj %}
+    <tr x-data="{ open: false }" @keydown.escape="open = false" class="hover:bg-gray-800">
+        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-0">
+            {{ match.team1 }} vs {{ match.team2 }}
+        </td>
+        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{{ match.date }}</td>
+        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{{ match.team1.championship }}</td>
+        <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+            <button @click="open = !open" class="text-orange-400 hover:text-orange-300 focus:outline-none">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                     aria-hidden="true">
+                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
+                </svg>
+            </button>
+            <div x-show="open"
+                 @click.away="open = false"
+                 class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                 role="menu"
+                 aria-orientation="vertical"
+                 aria-labelledby="match-options-menu-{{ forloop.counter }}"
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95">
+                <a href="{% url 'planner:match-detail' match.slug %}"
+                   class="block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                   role="menuitem">Voir match</a>
+                <button hx-post="{% url 'planner:delete-match' match.slug %}"
+                        hx-target="#matches-table-body"
+                        hx-confirm="Are you sure you want to delete this match?"
+                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        role="menuitem">Supprimer le match
+                </button>
+            </div>
+        </td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="4" class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-300 sm:pl-0">
+            Aucun match trouvé.
+        </td>
+    </tr>
+{% endfor %}

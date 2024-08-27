@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="bg-gray-900 min-h-screen flex items-center justify-center">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-lg text-center">
+            <h1 class="text-2xl font-bold text-white mb-4">Présence confirmée</h1>
+            <p class="text-gray-300 mb-4">
+                Merci {{ attendance.player.name }}, votre présence pour le match <span class="font-bold">{{ attendance.match }}</span> a été confirmée.
+                <br> Vous pouvez à présent fermer la fenêtre.
+            </p>
+            <button id="closeButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Fermer la page
+            </button>
+        </div>
+    </div>
+    <script>
+        // Lets add a functionality to close the page when on the button "closeButton"
+        document.querySelector('#closeButton').addEventListener('click', function (event) {
+            window.close();
+            event.preventDefault();
+        });
+    </script>
+{% endblock %}
+

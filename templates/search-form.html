@@ -1,0 +1,160 @@
+<div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6" x-data="{ searchOpen: false, searchQuery: '' }"
+     x-init="
+        window.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                searchOpen = true;
+                $nextTick(() => $refs.modalSearchInput.focus());
+            }
+        });
+     ">
+    <!-- Search icon trigger -->
+    <div class="relative flex items-center w-auto">
+        <button @click.prevent="searchOpen = true; $nextTick(() => $refs.modalSearchInput.focus())"
+                class="relative w-full flex items-center">
+            <svg class="pointer-events-none absolute left-0 h-full w-5 text-gray-500"
+                 viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                      clip-rule="evenodd"/>
+            </svg>
+            <span class="sr-only">Search</span>
+            <span class="block h-full w-full border-0 bg-transparent py-1.5 pl-8 pr-0 text-gray-500 sm:text-sm">Rechercher...</span>
+            <span class="relative right-0 flex items-center pl-4">
+            <kbd class="inline-flex items-center rounded border border-gray-500 px-1 font-sans text-xs text-gray-500">
+                <span class="text-xs">⌘</span><span class="text-xs ml-1">K</span>
+            </kbd>
+            </span>
+        </button>
+    </div>
+
+    <!-- Modal backdrop -->
+    <div
+            class="fixed inset-0 bg-slate-900 bg-opacity-30 z-50 transition-opacity"
+            x-show="searchOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-out duration-100"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            aria-hidden="true"
+            x-cloak
+    ></div>
+
+    <!-- Modal dialog -->
+    <div
+            id="search-modal"
+            class="fixed inset-0 z-50 overflow-hidden flex items-start top-20 mb-4 justify-center px-4 sm:px-6"
+            role="dialog"
+            aria-modal="true"
+            x-show="searchOpen"
+            x-transition:enter="transition ease-in-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in-out duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            x-cloak
+    >
+        <div
+                class="bg-gray-200 dark:bg-slate-800 border border-transparent dark:border-slate-700 overflow-auto max-w-2xl w-full max-h-full rounded shadow-lg"
+                @click.outside="searchOpen = false"
+                @keydown.escape.window="searchOpen = false"
+        >
+            <!-- Search form -->
+            <form class="border-b border-slate-200 dark:border-slate-700" @submit.prevent="performSearch">
+                <div class="relative">
+                    <label for="modal-search" class="sr-only">Rechercher</label>
+                    <input
+                            id="modal-search"
+                            class="w-full dark:text-slate-300 bg-white dark:bg-slate-800 border-0 focus:ring-transparent placeholder-slate-400 dark:placeholder-slate-500 appearance-none py-3 pl-10 pr-4"
+                            type="search"
+                            placeholder="Rechercher une équipe ou un match…"
+                            x-ref="modalSearchInput"
+                            x-model="searchQuery"
+                            @input.debounce.300ms="performSearch"
+                            autocomplete="off"
+                    />
+                    <button class="absolute inset-0 right-auto group" type="submit" aria-label="Search">
+                        <svg class="w-4 h-4 shrink-0 fill-current text-slate-400 dark:text-slate-500 group-hover:text-slate-500 dark:group-hover:text-slate-400 ml-4 mr-2"
+                             viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 14c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zM7 2C4.243 2 2 4.243 2 7s2.243 5 5 5 5-2.243 5-5-2.243-5-5-5z"/>
+                            <path d="M15.707 14.293L13.314 11.9a8.019 8.019 0 01-1.414 1.414l2.393 2.393a.997.997 0 001.414 0 .999.999 0 000-1.414z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <div class="py-4 px-2">
+                <!-- Search results -->
+                <div class="mb-3 last:mb-0">
+                    <div class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase px-2 mb-2">Résultats de la recherche
+                    </div>
+                    <ul class="text-sm" id="search-results">
+                        <!-- Search results will be dynamically inserted here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function performSearch() {
+        const searchQuery = this.searchQuery;
+        if (searchQuery.length < 3) {
+            document.getElementById('search-results').innerHTML = '<li class="px-2">Tapez au moins 3 caractères pour rechercher</li>';
+            return;
+        }
+
+        fetch(`/search/?q=${encodeURIComponent(searchQuery)}`)
+            .then(response => response.json())
+            .then(data => {
+                const resultsContainer = document.getElementById('search-results');
+                resultsContainer.innerHTML = '';
+
+                if (data.teams.length === 0 && data.matches.length === 0) {
+                    resultsContainer.innerHTML = '<li class="px-2">No results found</li>';
+                    return;
+                }
+
+                if (data.teams.length > 0) {
+                    resultsContainer.innerHTML += '<li class="px-2 font-semibold">Equipes :</li>';
+                    data.teams.forEach(team => {
+                        resultsContainer.innerHTML += `
+                        <li>
+                            <a href="/teams/${team.id}" class="flex items-center space-x-2 p-2 text-slate-800 dark:text-slate-100 hover:text-white hover:bg-orange-500 rounded group">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                </svg>
+                                <span>${team.name}</span>
+                            </a>
+                        </li>
+                    `;
+                    });
+                }
+
+                if (data.matches.length > 0) {
+                    resultsContainer.innerHTML += '<li class="px-2 font-semibold mt-2">Matches :</li>';
+                    data.matches.forEach(match => {
+                        resultsContainer.innerHTML += `
+                        <li>
+                            <a href="/matches/${match.slug}" class="flex items-center space-x-2 p-2 text-slate-800 dark:text-slate-100 hover:text-white hover:bg-orange-500 rounded group">
+                                <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                     stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                                </svg>
+                                <span>${match.team1} vs ${match.team2}</span>
+                            </a>
+                        </li>
+                    `;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('search-results').innerHTML = '<li class="px-2">Erreur lors de la recherche.</li>';
+            });
+    }
+</script>

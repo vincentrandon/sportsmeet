@@ -1,0 +1,42 @@
+{% for match in upcoming_matches %}
+    <li class="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div class="min-w-0 flex-auto">
+            <div class="flex items-center gap-x-3">
+                <div class="flex-none rounded-full bg-gray-100/10 p-1 text-gray-500">
+                    <div class="h-2 w-2 rounded-full bg-current"></div>
+                </div>
+                <h2 class="min-w-0 text-sm font-semibold leading-6 text-white">
+                    <a href="{% url 'planner:match-detail' slug=match.slug %}" class="flex gap-x-2">
+                        <span class="truncate">{{ match.team1 }} vs {{ match.team2 }}</span>
+                    </a>
+                </h2>
+            </div>
+            <div class="mt-3 flex items-center gap-x-2.5 text-xs leading-5 text-gray-400">
+                <!-- Players -->
+                <div class="isolate flex -space-x-2 overflow-hidden">
+                    {% for attendance in match.attendance_set.all %}
+                        <div class="relative group">
+                            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-500">
+                                <span class="text-xs font-medium leading-none text-white">{{ attendance.player.name|slice:":2"|upper }}</span>
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 flex-none fill-gray-300">
+                    <circle cx="1" cy="1" r="1"/>
+                </svg>
+                <p class="whitespace-nowrap">{{ match.date }}</p>
+            </div>
+        </div>
+        <div class="flex-none rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset {% if match.confirmed_count >= match.subchampionship.required_players %}bg-green-400/10 text-green-400 ring-green-400/20{% else %}bg-yellow-400/10 text-yellow-400 ring-yellow-400/20{% endif %}">
+            {% if match.confirmed_count >= match.subchampionship.required_players %}
+                Equipe complète
+            {% else %}
+                {{ match.confirmed_count }} sur {{ match.subchampionship.required_players }} joueurs confirmés
+            {% endif %}
+        </div>
+        <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
+        </svg>
+    </li>
+{% endfor %}
